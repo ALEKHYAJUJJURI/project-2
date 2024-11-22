@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+
 require('dotenv').config()
 const app = express();
-
+require('cookie-parser')
 // Middleware
 app.use(cors() );
 app.use(express.json());
@@ -13,7 +14,7 @@ app.use(express.json());
 
 app.use(cors({
   origin: 'http://localhost:3000',  // Only allow your frontend's origin
-  credentials: true,  
+  credentials: true
 }));
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/mernauth', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -30,6 +31,7 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model('User', userSchema);
+
 
 const generateTokens = (userId) => {
   const accessToken = jwt.sign({ email:userId}, process.env.JWT_SECRET, { expiresIn: '1m' });  
@@ -76,10 +78,12 @@ app.post('/api/login', async (req, res) => {
     if (!validPassword) return res.status(400).json({ error: 'Invalid password' });
    
     const {accessToken , refreshToken} = generateTokens(user.email) 
+    res.cookie('accessToken',accessToken,{maxAge:60000})
     res.cookie('refreshToken',refreshToken,{
         httpOnly:true,
         secure:true,
-        sameSite:'None'
+        sameSite:'None',
+        maxAge:300000
     })
     return res.status(200).json({accessToken,refreshToken,user})
   } catch (error) {
@@ -88,9 +92,10 @@ app.post('/api/login', async (req, res) => {
 });
 
 app.post('/api/refresh-token', async (req,res)=>{
-  const user = await User.findOne({ email });
-  accessToken = jwt.sign({ _id:user._id}, process.env.JWT_SECRET, { expiresIn: '1m' });  
-  refreshToken = jwt.sign({ _id: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' }); 
+  
+   const user = await User.findOne({ email });
+  accessToken = jwt.sign({ _id:user.email}, process.env.JWT_SECRET, { expiresIn: '1m' });  
+  refreshToken = jwt.sign({ _id:user.email}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' }); 
   if(!refreshToken){
     return res.status(403).json({error:"Refresh token is required"})
   }
@@ -98,9 +103,9 @@ app.post('/api/refresh-token', async (req,res)=>{
 try{
   const verified = jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET);
   const {accessToken,refreshToken:newRefreshToken} = generateTokens(verified.email)
-  res.json({accessToken,newRefreshToken})
 
-  return res.status(200).json(accessToken,newRefreshToken)
+
+  res.status(200).json(accessToken,newRefreshToken)
 }catch(err){
   res.status(400).json({error:"Invalid refresh token"})
 }
@@ -130,9 +135,44 @@ app.get("*",(req,res)=>{
   return res.status(404).json({message:'Notfound'})
 })
 // Protected route
+mongoose.connect('mongodb://localhost:27017/mernauth', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
 app.get('/api/protected', verifyToken, (req, res) => {
-  res.json({ message: 'This is a protected route', userId: req.user._id });
+  res.json({ message: 'This is a protected route', userId: req.user.email });
 });
+
+const SellerSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  price: { type: Number, required: true }
+ 
+})
+const Seller = mongoose.model("seller",SellerSchema)
+app.post('/api/products', async (req,res)=>{
+  const {name,description,price} = req.body 
+
+  try{
+    const product = new Seller({ name,description,price });
+   await product.save()
+   res.status(200).json({product})
+  }
+  catch(err){
+    res.status(500).json({err:"not uploaded"})
+  }
+  
+});
+
+app.get('/api/get-products', async(req,res)=>{
+  try{
+    const products = await Seller.find()
+  res.status(200).json(products)
+  } catch(err){
+    res.status(500).json({err:"not found products"})
+  }
+
+})
 
 
 

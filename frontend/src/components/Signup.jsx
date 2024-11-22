@@ -14,13 +14,17 @@ const SignupForm = () => {
   const navigate = useNavigate()
 
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     const { username, email, password,role } = values
+       try{
         console.log(values.username)
         console.log('Submitting data to API:', { username, email, password,role });
-        const response = axios.post('http://localhost:5002/api/signup', { username, email, password,role });
+        const response = await axios.post('http://localhost:5002/api/signup', { username, email, password,role });
         console.log('API response:', response.data);
         navigate('/login');
+       }catch(err){
+        console.log(err)
+       }
   };
   
 

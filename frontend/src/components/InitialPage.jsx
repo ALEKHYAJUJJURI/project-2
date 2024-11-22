@@ -2,10 +2,15 @@ import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
 import { Layout, Menu, Input, Button, Row, Col } from "antd";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
+import { useEffect } from "react";
+import axios from "axios";
 
 const { Header } = Layout;
 
 export function LoadingPage() {
+  
+   
+  
   return (
     <div className="container-fluid" style={{ height: "100vh", backgroundSize: "cover" }}>
       <Row>
@@ -20,12 +25,9 @@ export function LoadingPage() {
               padding: "0 16px",
             }}
           >
-            {/* Logo */}
             <div className="logo">
               <h2 >Shopping.</h2>
             </div>
-
-            {/* Responsive Menu */}
             <Menu
               mode="horizontal"
               style={{
@@ -36,7 +38,6 @@ export function LoadingPage() {
               }}
               selectable={false}
             >
-              {/* Search Input */}
               <Menu.Item key="search" style={{ flex: 1, marginRight: 10 }}>
                 <Input
                   placeholder="Search here..."
@@ -44,8 +45,6 @@ export function LoadingPage() {
                   style={{ width: "100%" }}
                 />
               </Menu.Item>
-
-              {/* Signup Button */}
               <Menu.Item key="signup" style={{ marginRight: 10 }}>
                 <Link to="/signup">
                   <Button type="primary" style={{ width: "100%" }}>
@@ -54,7 +53,7 @@ export function LoadingPage() {
                 </Link>
               </Menu.Item>
 
-              {/* Login Button */}
+
               <Menu.Item key="login" style={{ marginRight: 10 }}>
                 <Link to="/login">
                   <Button

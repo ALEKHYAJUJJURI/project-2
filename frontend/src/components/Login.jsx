@@ -50,6 +50,7 @@ function Login() {
           storeWithExpiry('accessToken', result.data.accessToken, 60 * 60); // 1 hour
           storeWithExpiry('refreshToken', result.data.refreshToken, 3 * 24 * 60 * 60); // 3 days
           navigate('/home');
+          
         }
       } else if (role === 'seller') {
         // Navigate to seller dashboard

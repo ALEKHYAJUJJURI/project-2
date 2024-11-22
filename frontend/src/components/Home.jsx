@@ -10,6 +10,8 @@ function Home() {
 
   
   useEffect(() => {
+
+    
     const fetchProtectedData = async () => {
       const token = localStorage.getItem('accessToken');
       const refreshToken = localStorage.getItem('refreshToken')
@@ -28,9 +30,14 @@ function Home() {
       } catch (error) {
         console.error('Error fetching protected data:', error);
       }
+      
+
   }
   
+  
     fetchProtectedData();
+  axios.get('')
+
   }, [navigate]);
 
   const handleLogout = () => {
