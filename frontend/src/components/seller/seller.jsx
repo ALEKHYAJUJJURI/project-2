@@ -1,14 +1,12 @@
 import React from 'react';
 import axios from 'axios';
-import { Form, Input, Button,InputNumber } from 'antd';
+import { Form, Input, Button,InputNumber, Upload, message } from 'antd';
 
 import { useNavigate } from 'react-router-dom';
 
 
 
 export function SellerDashboard(){
-   
-  
   const navigate = useNavigate()
 
   const handleUpload = async (values) => {
@@ -43,7 +41,7 @@ export function SellerDashboard(){
       >
         
         <Form.Item
-          label=" Name"
+          label="Product Name"
           name="name"
           rules={[{ required: true, message: 'Please enter the name!' }]}
         >
@@ -56,12 +54,12 @@ export function SellerDashboard(){
           name="description"
           rules={[{ required: true, message: 'Please enter description!' }]}
         >
-          <Input.TextArea rows={4} placeholder="Enter product description" />
+          <Input.TextArea rows={4} placeholder="Enter product number" />
         </Form.Item>
 
         {/* Product Price */}
         <Form.Item
-          label="Number"
+          label="price"
           name="price"
           rules={[{ required: true, message: 'Please enter number' }]}
         >
@@ -72,12 +70,41 @@ export function SellerDashboard(){
             step={0.01}
           />
         </Form.Item>
+        <Form.Item 
+        label="Product Image"
+        name="image"
+        rules={[
+          {
+            required:true,
+            message:"provide the image"
+          },
+          {
+            
+          }
+        ]}
+        >
+          <Upload  
+
+          beforeUpload={(file)=>{
+            return new Promise((res,rej)=>{
+              if(file.size>3){
+                rej("file size is not matching")
+                message.error("File size exceed")
+              } else{
+                res('success')
+              }
+            })
+          }}
+          >
+            <Button>Upload the picture</Button>
+          </Upload>
+        </Form.Item>
 
      
         {/* Submit Button */}
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Upload 
+            Upload Product 
           </Button>
         </Form.Item>
       </Form>

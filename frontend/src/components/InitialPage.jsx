@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
 import { Layout, Menu, Input, Button, Row, Col } from "antd";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
-import { useEffect } from "react";
-import axios from "axios";
+
 
 const { Header } = Layout;
 

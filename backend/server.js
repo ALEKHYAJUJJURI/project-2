@@ -13,8 +13,10 @@ app.use(express.json());
 
 
 app.use(cors({
-  origin: 'http://localhost:3000',  // Only allow your frontend's origin
-  credentials: true
+  origin: 'http://localhost:3002',  // Only allow your frontend's origin
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods:["GET","POST"]
 }));
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/mernauth', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -49,8 +51,9 @@ res.status(200).json({msg:"welcome"})
 // Signup route
 app.post('/api/signup', async (req, res) => {
   const { username, email, password,role } = req.body;
+  // console.log("req.body", req.body)
     if(!username || !email || !password || !role){
-      return res.status(400).json({error:"All feilds are required"})
+      return res.status(400).json({error:"All fields are required"})
     }
 
   try {
@@ -166,8 +169,9 @@ app.post('/api/products', async (req,res)=>{
 
 app.get('/api/get-products', async(req,res)=>{
   try{
-    const products = await Seller.find()
-  res.status(200).json(products)
+    const products = await Seller.find({})
+    console.log(products)
+  res.status(200).json({products})
   } catch(err){
     res.status(500).json({err:"not found products"})
   }

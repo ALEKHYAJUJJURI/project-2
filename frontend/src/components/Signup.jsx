@@ -16,18 +16,22 @@ const SignupForm = () => {
 
   const onFinish = async (values) => {
     const { username, email, password,role } = values
+    console.log(values)
        try{
         console.log(values.username)
         console.log('Submitting data to API:', { username, email, password,role });
         const response = await axios.post('http://localhost:5002/api/signup', { username, email, password,role });
         console.log('API response:', response.data);
+        if(response.status === 400){
+          alert("user already present in database. please login");
+          navigate('/login');
+        }
         navigate('/login');
        }catch(err){
+        // nav
         console.log(err)
        }
   };
-  
-
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f0f2f5' }}>
       <Card style={{ width: '400', boxShadow: '0 4px 8px rgba(0,45,0,0.5)'}}>
@@ -35,8 +39,7 @@ const SignupForm = () => {
         <Form
           form={form}
           name="register"
-          onFinish={onFinish}
-          
+          onFinish={onFinish} 
         >
           <Form.Item
             name="username"
